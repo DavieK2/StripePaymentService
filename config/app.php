@@ -194,6 +194,9 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\UserRepositoryProvider::class,
+        App\Providers\PaymentMethodRepositoryProvider::class,
+        App\Providers\PaymentGatewayServiceProvider::class,
 
     ],
 
@@ -211,5 +214,9 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
+
+
+    'stripe_api_key' => env('STRIPE_API_KEY'),
+    'stripe_endpoint_secret' => env('STRIPE_ENDPOINT_SECRET'),
 
 ];

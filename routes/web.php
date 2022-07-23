@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserPaymentMethodController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +17,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [UserController::class, 'index'])->name('user.index');
+Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
+Route::post('/user/create', [UserController::class, 'store'])->name('user.store');
+Route::get('/user/{userId}', [UserController::class, 'show'])->name('user.show');
+Route::delete('/user/{userId}/delete', [UserController::class, 'destroy'])->name('user.destroy');
+Route::post('/user-payment-method/{userId}/{paymentMethodId}', [UserPaymentMethodController::class, 'create'])->name('user.create.payment_method');
+Route::post('/user-payment-method/{userId}/{paymentMethodId}/update', [UserPaymentMethodController::class, 'update'])->name('user.update.payment_method');
+Route::post('/user-payment-method/{userId}/{paymentMethodId}/delete', [UserPaymentMethodController::class, 'destroy'])->name('user.delete.payment_method');
+
+Route::get('/payment-methods', [PaymentMethodController::class, 'index'])->name('payment.index');
+Route::get('/payment-method/create', [PaymentMethodController::class, 'create'])->name('payment.create');
+Route::post('/payment-method/create', [PaymentMethodController::class, 'store'])->name('payment.store');
+Route::get('/payment-method/{paymentMethodId}/edit', [PaymentMethodController::class, 'edit'])->name('payment.edit');
+Route::patch('/payment-method/{paymentMethodId}/update', [PaymentMethodController::class, 'update'])->name('payment.update');
+Route::delete('/payment-method/{paymentMethodId}/delete', [PaymentMethodController::class, 'destroy'])->name('payment.destroy');
+
+Route::post('/checkout', [PaymentController::class, 'store'])->name('payment.checkout');
+Route::get('/payment-successful', [PaymentController::class, 'paymentSuccessful'])->name('payment.succesful');
+Route::get('/payment-cancel', [PaymentController::class, 'paymentCancelled'])->name('payment.cancel');
