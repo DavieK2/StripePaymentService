@@ -21,17 +21,17 @@ class UserRepository implements UserRepositoryInterface {
         User::create($data);
     }
 
-    public function getUser($userId) : User
+    public function getUser(int $userId) : User
     {
        return $this->findUser($userId);
     }
 
-    public function getUserPaymentMethods($userId) : Collection
+    public function getUserPaymentMethods(int $userId) : Collection
     {
         return $this->findUser($userId)?->paymentMethods()->get();
     }
 
-    public function addUserPaymentMethod($userId, $paymentMethodId) : void
+    public function addUserPaymentMethod(int $userId, int $paymentMethodId) : void
     {
         $paymentMethods = $this->findUser($userId)?->paymentMethods();
 
@@ -42,10 +42,10 @@ class UserRepository implements UserRepositoryInterface {
             ]);
     } 
 
-    public function updateUserDefaultPaymentMethod($userId, $paymentMethodId) : void
+    public function updateUserDefaultPaymentMethod(int $userId, int $paymentMethodId) : void
     {   
         $user = $this->findUser($userId);
-        $user?->paymentMethods()->get()->pluck('id')
+        $user?->paymentMethods->pluck('id')
                                 ->map(fn($id) => $user?->paymentMethods()
                                                         ->syncWithoutDetaching([
                                                             $id => [
@@ -55,7 +55,7 @@ class UserRepository implements UserRepositoryInterface {
                                                         );
     }
 
-    public function removeUserPaymentMethod($userId, $paymentMethodId) : void
+    public function removeUserPaymentMethod(int $userId, int $paymentMethodId) : void
     {
         $this->findUser($userId)?->paymentMethods()->detach($paymentMethodId);
     }

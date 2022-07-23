@@ -1,7 +1,12 @@
 <?php
 
+use App\Http\Controllers\CashPaymentController;
+use App\Http\Controllers\PaymentCancelledController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\PaymentMethodToggleActiveStatusController;
+use App\Http\Controllers\PaymentSuccessfulController;
+use App\Http\Controllers\RefundController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserPaymentMethodController;
 use Illuminate\Support\Facades\Route;
@@ -32,7 +37,12 @@ Route::post('/payment-method/create', [PaymentMethodController::class, 'store'])
 Route::get('/payment-method/{paymentMethodId}/edit', [PaymentMethodController::class, 'edit'])->name('payment.edit');
 Route::patch('/payment-method/{paymentMethodId}/update', [PaymentMethodController::class, 'update'])->name('payment.update');
 Route::delete('/payment-method/{paymentMethodId}/delete', [PaymentMethodController::class, 'destroy'])->name('payment.destroy');
+Route::patch('/payment-method/{paymentMethodId}/toggle', [PaymentMethodToggleActiveStatusController::class, 'update'])->name('payment.toggle');
 
-Route::post('/checkout', [PaymentController::class, 'store'])->name('payment.checkout');
-Route::get('/payment-successful', [PaymentController::class, 'paymentSuccessful'])->name('payment.succesful');
-Route::get('/payment-cancel', [PaymentController::class, 'paymentCancelled'])->name('payment.cancel');
+Route::get('/checkout/cash/', [CashPaymentController::class, 'index'])->name('payment.checkout.cash');
+
+Route::post('/checkout/{userId}', [PaymentController::class, 'create'])->name('payment.checkout');
+Route::get('/payment-successful', [PaymentSuccessfulController::class, 'index'])->name('payment.succesful');
+Route::get('/payment-cancel', [PaymentCancelledController::class, 'index'])->name('payment.cancel');
+
+Route::get('/refund/{paymentId}', [RefundController::class, 'store'])->name('refund.store');

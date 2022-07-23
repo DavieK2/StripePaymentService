@@ -14,25 +14,15 @@ class PaymentController extends Controller
         $this->paymentGateway = $paymentGateway;
     }
 
-    public function store() : RedirectResponse
+    public function create($userId) : RedirectResponse
     {
-        $checkoutUrl =  $this->paymentGateway->checkout();
+        $checkoutUrl =  $this->paymentGateway->checkout($userId);
         return redirect($checkoutUrl);
     }
 
-    public function checkOutWebHook()
+    public function store() : void
     {
-        
-    }
-
-    public function paymentSuccessful()
-    {
-        return 'Hi alone';
-    }
-
-    public function paymentCancelled()
-    {
-        return 'Hi alone';
+        $this->paymentGateway->checkoutSessionWebHook();
     }
 
 }

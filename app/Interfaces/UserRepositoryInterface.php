@@ -9,11 +9,11 @@ interface UserRepositoryInterface{
 
     public function addUser() : void;
     public function getUsers() : Collection;
-    public function getUser($userId) : User;
-    public function deleteUser($userId) : void;
-    public function getUserPaymentMethods($userId) : Collection;
-    public function addUserPaymentMethod($userId, $paymentMethodId) : void;
-    public function updateUserDefaultPaymentMethod($userId, $paymentMethodId) : void;
-    public function removeUserPaymentMethod($userId, $paymentMethodId) : void;
+    public function getUser(int $userId) : User;
+    public function deleteUser(int $userId) : void;
+    public function getUserPaymentMethods(int $userId) : Collection;
+    public function addUserPaymentMethod(int $userId, int $paymentMethodId) : void;
+    public function updateUserDefaultPaymentMethod(int $userId, int $paymentMethodId) : void;
+    public function removeUserPaymentMethod(int $userId, int $paymentMethodId) : void;
     
 }

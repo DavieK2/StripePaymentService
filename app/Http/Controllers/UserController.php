@@ -6,6 +6,7 @@ use App\Interfaces\PaymentMethodRepositoryInterface;
 use App\Interfaces\UserRepositoryInterface;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -38,12 +39,14 @@ class UserController extends Controller
 
     public function show($userId) : View
     {
+        $user = $this->userRepository->getUser($userId);
         $userPaymentMethods = $this->userRepository->getUserPaymentMethods($userId);
-        
+        session(['defaultPaymentMethodId' => $user->default_payment_method]);
+
         return view('user.show' ,[
-            'user' => $this->userRepository->getUser($userId),
+            'user' => $user,
             'userPaymentMethods' => $userPaymentMethods,
-            'paymentMethods' => $this->paymentMethodRepository->allPaymentMethods(),
+            'paymentMethods' => $this->paymentMethodRepository->getActivePaymentMethods(),
         ]);
     }
 

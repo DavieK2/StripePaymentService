@@ -58,8 +58,12 @@
         @endforelse
     </ul>
 
-    <a href="#checkout" onclick="event.preventDefault(); document.getElementById('checkout').submit();" class="flex justify-center py-4 px-8 w-full bg-blue-600 hover:bg-blue-800 rounded-lg text-white text-base font-bold mt-16">Proceed to checkout (Paying $20)</a>
-    <form hidden id="checkout" action="{{ route('payment.checkout') }}" method="POST"> @csrf </form>
+    @if ($user->default_payment_method == null)
+        <button disabled class="flex justify-center py-4 px-8 w-full bg-gray-600 rounded-lg text-white text-base font-bold mt-16">Select a Default Payment Method</button>
+    @else
+        <a href="#checkout" onclick="event.preventDefault(); document.getElementById('checkout').submit();" class="flex justify-center py-4 px-8 w-full bg-blue-600 hover:bg-blue-800 rounded-lg text-white text-base font-bold mt-16">Proceed to checkout (Paying $20)</a>
+        <form hidden id="checkout" action="{{ route('payment.checkout', $user->id) }}" method="POST"> @csrf <input hidden type="text" value="{{ $user->default_payment_method }}" name="payment_method"></form>
+    @endif
 @endsection
 @section('stripe')
     <script src="https://js.stripe.com/v3/"></script>

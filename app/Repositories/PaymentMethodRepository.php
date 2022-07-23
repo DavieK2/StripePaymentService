@@ -10,7 +10,9 @@ class PaymentMethodRepository implements PaymentMethodRepositoryInterface {
 
     public function addPaymentMethod(): void
     {
-        PaymentMethod::create($this->validated());
+        $data = $this->validated();
+        $data['class'] = 'App\Contracts\\'.trim(ucwords($data['payment_method'])).'PaymentGateway';
+        PaymentMethod::create($data);
     }
 
     public function allPaymentMethods(): Collection
@@ -18,27 +20,39 @@ class PaymentMethodRepository implements PaymentMethodRepositoryInterface {
         return PaymentMethod::get();
     }
 
-    public function updatePaymentMethod($paymentMethodId): void
+    public function getActivePaymentMethods() : Collection
+    {
+        return PaymentMethod::where('is_active', true)->get();
+    }
+
+    public function updatePaymentMethod(int $paymentMethodId): void
     {
        $this->findPaymentMethod($paymentMethodId)?->update($this->validated());
     }
 
-    public function deletePaymentMethod($paymentMethodId): void
+    public function deletePaymentMethod(int $paymentMethodId): void
     {
         $this->findPaymentMethod($paymentMethodId)?->delete();
     }
 
-    public function editPaymentMethod($paymentMethodId): PaymentMethod
+    public function editPaymentMethod(int $paymentMethodId): PaymentMethod
     {
         return $this->findPaymentMethod($paymentMethodId);
     }
 
+    public function togglePaymentMethod(int $paymentMethodId): bool
+    {
+        $paymentMethod =  $this->findPaymentMethod($paymentMethodId);
+        if(!class_exists($paymentMethod->class)) return false;
+        return $paymentMethod?->update(['is_active' => $paymentMethod->is_active ? false : true ]);
+    }
+
     protected function validated() : array
     {
-        return request()->validate(['payment_method' => 'required']);
+        return request()->validate(['payment_method' => 'required|alpha']);
     }
     
-    protected function findPaymentMethod($paymentMethodId) : null | PaymentMethod
+    protected function findPaymentMethod(int $paymentMethodId) : null | PaymentMethod
     {
        return PaymentMethod::findOrFail($paymentMethodId);
     }

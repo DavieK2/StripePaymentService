@@ -49,4 +49,11 @@ class User extends Authenticatable
                     ->withPivot(['is_default'])
                     ->withTimestamps();
     }
+
+    public function getDefaultPaymentMethodAttribute()
+    {
+        return $this->paymentMethods()->get()
+                                    ->filter(fn($paymentMethod) => $paymentMethod->pivot->is_default == true)
+                                    ?->first()?->id;
+    }
 }

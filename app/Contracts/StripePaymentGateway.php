@@ -3,6 +3,8 @@
 namespace App\Contracts;
 
 use App\Interfaces\PaymentGatewayInterface;
+use App\Models\Payment;
+use App\Models\Refund;
 use Illuminate\Support\Facades\Log;
 use Stripe\Stripe;
 
@@ -13,9 +15,10 @@ class StripePaymentGateway implements PaymentGatewayInterface{
         Stripe::setApiKey(config('app.stripe_api_key'));
     }
 
-    public function checkout() : string
+    public function checkout(string $userId) : string
     {
         $checkout_session = \Stripe\Checkout\Session::create([
+            'client_reference_id' => "$userId",
             'line_items' => [[
                 'price_data' => [
                   'currency' => 'usd',
@@ -34,31 +37,54 @@ class StripePaymentGateway implements PaymentGatewayInterface{
         return $checkout_session->url;
     }
 
-    public function checkOutWebHook()
+    public function checkoutSessionWebhook() : void
     {
-        $payload = request()->all();
-        $sig_header = request()->header('HTTP_STRIPE_SIGNATURE');
+
+        $payload = @file_get_contents('php://input');
+        $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
         $endpoint_secret = config('app.stripe_endpoint_secret');
+        $event = null;
         
         try {
             $event = \Stripe\Webhook::constructEvent(
               $payload, $sig_header, $endpoint_secret
             );
+
           } catch(\UnexpectedValueException $e) {
             // Invalid payload
+            Log::error("$e");
             http_response_code(400);
             exit();
+
           } catch(\Stripe\Exception\SignatureVerificationException $e) {
             // Invalid signature
+            Log::error("$e");
             http_response_code(400);
             exit();
           }
-          
-          function fulfill_order($session) {
-         
-            Log::info("$session");
-            // dd($session);
-          }
-          
+        
+        if($event->type === 'checkout.session.completed') $this->creatPayment($event);    
     }
+
+    public function creatPayment($event) : void
+    {
+        Log::info("$event");
+        Payment::create(['payment_data' => $event->data->object]);
+    }
+
+    public function refund(int $paymentId) : void
+    {
+        $stripe = new \Stripe\StripeClient(config('app.stripe_api_key'));
+
+        $payment = Payment::findOrFail($paymentId);
+        try {
+            $refundsData = $stripe->refunds->create(['payment_intent' => $payment->payment_data['payment_intent'] ]);
+            Refund::create(['refund_data' => $refundsData]);
+
+        } catch (\Stripe\Exception\InvalidRequestException $e) {
+            Log::error("$e");
+        }
+       
+    }
+
 }

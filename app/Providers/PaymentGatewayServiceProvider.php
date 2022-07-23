@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Contracts\StripePaymentGateway;
 use App\Interfaces\PaymentGatewayInterface;
+use App\Models\PaymentMethod;
 use Illuminate\Support\ServiceProvider;
 
 class PaymentGatewayServiceProvider extends ServiceProvider
@@ -25,6 +25,10 @@ class PaymentGatewayServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app->bind(PaymentGatewayInterface::class, StripePaymentGateway::class);
+        $this->app->bind(PaymentGatewayInterface::class, function($app){
+            if(!request()->has('payment_method')) abort(404, 'Invalid Payment Method');
+            $paymentGateway = PaymentMethod::findOrFail(request('payment_method'))?->class;
+            return new $paymentGateway();
+        });
     }
 }
