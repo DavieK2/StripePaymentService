@@ -8,6 +8,6 @@ class PaymentSuccessfulController extends Controller
 {
     public function index()
     {
-        return 'Hi alone';
+        return view('payment.success');
     }
 }
