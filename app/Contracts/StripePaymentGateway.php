@@ -2,6 +2,7 @@
 
 namespace App\Contracts;
 
+use App\Events\CustomerHasCompletedStripeCheckOutEvent;
 use App\Interfaces\PaymentGatewayInterface;
 use App\Models\Payment;
 use App\Models\Refund;
@@ -62,14 +63,21 @@ class StripePaymentGateway implements PaymentGatewayInterface{
             http_response_code(400);
             exit();
           }
-        
-        if($event->type === 'checkout.session.completed') $this->creatPayment($event);    
+
+          // if($event->type === 'checkout.session.completed'){
+          //   $this->createPayment($event->data->object);
+          // }
+          // For Testing
+          if( $event->type === 'charge.succeeded'){
+            $this->createPayment($event->data->object);
+          }
     }
 
-    public function creatPayment($event) : void
+    public function createPayment($data) : void
     {
-        Log::info("$event");
-        Payment::create(['payment_data' => $event->data->object]);
+      Payment::create(['payment_data' => $data]);
+      event(new CustomerHasCompletedStripeCheckOutEvent($data));
+     
     }
 
     public function refund(int $paymentId) : void

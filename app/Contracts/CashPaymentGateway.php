@@ -17,7 +17,7 @@ class CashPaymentGateway implements PaymentGatewayInterface{
           
     }
 
-    public function creatPayment($event) : void
+    public function createPayment($event) : void
     {
        
     }

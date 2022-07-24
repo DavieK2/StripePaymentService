@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\CustomerHasCompletedStripeCheckOutEvent;
 use App\Interfaces\PaymentMethodRepositoryInterface;
 use App\Interfaces\UserRepositoryInterface;
 use Illuminate\Contracts\View\View;
@@ -39,6 +40,7 @@ class UserController extends Controller
 
     public function show($userId) : View
     {
+        event(new CustomerHasCompletedStripeCheckOutEvent('Hello'));
         $user = $this->userRepository->getUser($userId);
         $userPaymentMethods = $this->userRepository->getUserPaymentMethods($userId);
         session(['defaultPaymentMethodId' => $user->default_payment_method]);

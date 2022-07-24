@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Stemless Co Test Tak</title>
+        <title>Stemless Co Test Task</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -19,6 +19,7 @@
         </style>
 
         @vite('resources/css/app.css')
+
         @yield('stripe')
     </head>
     <body class="antialiased bg-gray-900  text-gray-800 pb-12">
