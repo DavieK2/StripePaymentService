@@ -13,4 +13,5 @@ interface PaymentMethodRepositoryInterface{
     public function updatePaymentMethod(int $paymentMethodId) : void;
     public function togglePaymentMethod(int $paymentMethodId) : bool;
     public function deletePaymentMethod(int $paymentMethodId) : void;
+    public function findPaymentMethod(int $paymentMethodId) : null | PaymentMethod;
 }

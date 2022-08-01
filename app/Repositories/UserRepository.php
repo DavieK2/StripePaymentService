@@ -3,7 +3,9 @@
 namespace App\Repositories;
 
 use App\Interfaces\UserRepositoryInterface;
+use App\Models\PaymentMethod;
 use App\Models\User;
+use App\Services\StripeService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 
@@ -40,6 +42,14 @@ class UserRepository implements UserRepositoryInterface {
                 'is_default' => count($paymentMethods->get()) == 0 ? true : false 
                 ]
             ]);
+        
+        //For Testing Purposes
+
+        if(strtolower(PaymentMethod::find($paymentMethodId)->payment_method) == 'stripe'){
+            StripeService::createStripeCustomer($userId);
+        }
+        
+        
     } 
 
     public function updateUserDefaultPaymentMethod(int $userId, int $paymentMethodId) : void

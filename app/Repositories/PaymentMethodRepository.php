@@ -52,7 +52,7 @@ class PaymentMethodRepository implements PaymentMethodRepositoryInterface {
         return request()->validate(['payment_method' => 'required|alpha']);
     }
     
-    protected function findPaymentMethod(int $paymentMethodId) : null | PaymentMethod
+    public function findPaymentMethod(int $paymentMethodId) : null | PaymentMethod
     {
        return PaymentMethod::findOrFail($paymentMethodId);
     }

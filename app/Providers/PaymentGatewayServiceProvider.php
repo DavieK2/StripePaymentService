@@ -25,12 +25,12 @@ class PaymentGatewayServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app->singleton(PaymentGatewayInterface::class, function($app){
-            if(!request()->has('payment_method')) abort(400, 'Invalid Payment Method');
+        // $this->app->singleton(PaymentGatewayInterface::class, function($app){
+        //     if(!request()->has('payment_method')) abort(400, 'Invalid Payment Method');
             
-            $paymentGateway = PaymentMethod::findOrFail(request('payment_method'))?->class;
+        //     $paymentGateway = PaymentMethod::findOrFail(request('payment_method'))?->class;
             
-            return new $paymentGateway();
-        });
+        //     return new $paymentGateway();
+        // });
     }
 }

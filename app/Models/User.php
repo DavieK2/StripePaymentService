@@ -6,8 +6,8 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Collection;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\StripeCustomer;
 
 class User extends Authenticatable
 {
@@ -54,6 +54,19 @@ class User extends Authenticatable
     {
         return $this->paymentMethods()->get()
                                     ->filter(fn($paymentMethod) => $paymentMethod->pivot->is_default == true)
-                                    ?->first()?->id;
+                                    ?->first()?->only('id', 'payment_method');
+    }
+
+    public function stripeAccount(){
+        return $this->hasOne(StripeCustomer::class);
+    }
+
+    public function getStripeAccountIdAttribute(){
+        return $this->stripeAccount->customer_id;
+    }
+
+    public function updateStripePaymentMethod(string $paymentMethodId)
+    {
+        $this->stripeAccount->update(['payment_method_id' => $paymentMethodId ]);
     }
 }

@@ -6,10 +6,14 @@ use App\Events\CustomerHasCompletedStripeCheckOutEvent;
 use App\Interfaces\PaymentGatewayInterface;
 use App\Models\Payment;
 use App\Models\Refund;
+use App\Models\User;
+use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Log;
 use Stripe\Stripe;
 
 class StripePaymentGateway implements PaymentGatewayInterface{
+
+   
 
     public function __construct()
     {
@@ -19,7 +23,9 @@ class StripePaymentGateway implements PaymentGatewayInterface{
     public function checkout(string $userId) : string
     {
         $checkout_session = \Stripe\Checkout\Session::create([
-            'client_reference_id' => "$userId",
+            'customer' => User::find($userId)->stripe_account_id,
+            'payment_method_types' => ['card'],
+            'payment_intent_data'=> [ 'setup_future_usage' => 'off_session'],
             'line_items' => [[
                 'price_data' => [
                   'currency' => 'usd',
@@ -64,13 +70,14 @@ class StripePaymentGateway implements PaymentGatewayInterface{
             exit();
           }
 
-          // if($event->type === 'checkout.session.completed'){
+          if($event->type === 'checkout.session.completed'){
+            Log::info("$event");
+            // $this->createPayment($event->data->object);
+          }
+          // // For Testing
+          // if( $event->type === 'charge.succeeded'){
           //   $this->createPayment($event->data->object);
           // }
-          // For Testing
-          if( $event->type === 'charge.succeeded'){
-            $this->createPayment($event->data->object);
-          }
     }
 
     public function createPayment($data) : void

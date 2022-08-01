@@ -2,27 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Interfaces\PaymentGatewayInterface;
+use App\Factories\PaymentGatewayFactory;
 use Illuminate\Http\RedirectResponse;
 
 class PaymentController extends Controller
 {
     private $paymentGateway;
 
-    public function __construct(PaymentGatewayInterface $paymentGateway)
+    public function __construct()
     {
-        $this->paymentGateway = $paymentGateway;
+        $this->paymentGateway =  PaymentGatewayFactory::make(request('payment_method'));
     }
 
     public function create($userId) : RedirectResponse
     {
-        $checkoutUrl =  $this->paymentGateway->checkout($userId);
-        return redirect($checkoutUrl);
+        return redirect($this->paymentGateway->checkout($userId));
     }
 
-    public function store() : void
-    {
-        $this->paymentGateway->checkoutSessionWebHook();
-    }
+    
 
 }
